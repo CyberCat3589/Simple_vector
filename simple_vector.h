@@ -1,7 +1,10 @@
 #pragma once
 
+#include "array_ptr.h"
+#include <algorithm>
 #include <cassert>
 #include <initializer_list>
+#include <stdexcept>
 
 template <typename Type> 
 class SimpleVector
