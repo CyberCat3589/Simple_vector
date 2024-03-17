@@ -5,6 +5,32 @@
 #include <initializer_list>
 #include <stdexcept>
 
+// Не забудьте обновить указатель на начало вектора и текущую ёмкость.Для
+// реализации конструктора с резервированием вам понадобится
+// дополнительный класс - обёртка, чтобы компилятор мог разобраться и вызвать
+// правильный конструктор.Этот конструктор должен принимать по значению
+// объект этого класса - обёртки.Тогда функция(не метод!) будет иметь следующую сигнатуру :
+class ReserveProxyObj
+{
+  public:
+    explicit ReserveProxyObj(size_t capacity_to_reserve) : capacity_(capacity_to_reserve)
+    {
+    }
+
+    size_t ReserveCapacity()
+    {
+        return capacity_;
+    }
+
+  private:
+    size_t capacity_;
+};
+
+ReserveProxyObj Reserve(size_t capacity_to_reserve)
+{
+    return ReserveProxyObj(capacity_to_reserve);
+};
+
 template <typename Type> class SimpleVector
 {
   public:
@@ -28,6 +54,11 @@ template <typename Type> class SimpleVector
     SimpleVector(std::initializer_list<Type> init) : items_(init.size()), size_(init.size()), capacity_(init.size())
     {
         std::copy(init.begin(), init.end(), begin());
+    }
+
+    explicit SimpleVector(ReserveProxyObj obj)
+    {
+        Reserve(obj.ReserveCapacity());
     }
 
     // Возвращает количество элементов в массиве
@@ -237,6 +268,18 @@ template <typename Type> class SimpleVector
         items_.swap(other.items_);
         std::swap(size_, other.size_);
         std::swap(capacity_, other.capacity_);
+    }
+
+    void Reserve(size_t new_capacity)
+    {
+        if (new_capacity > capacity_)
+        {
+            ArrayPtr<Type> temp(new_capacity);
+            std::fill(temp.Get(), temp.Get() + new_capacity, Type());
+            std::copy(items_.Get(), items_.Get() + size_, temp.Get());
+            items_.swap(temp);
+            capacity_ = new_capacity;
+        }
     }
 
   private:
