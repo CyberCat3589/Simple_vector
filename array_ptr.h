@@ -70,13 +70,13 @@ class ArrayPtr
         return simple_vector_;
     }
     
-    // Возвращает true, если указатель ненулевой, и false в противном случае
-    explicit operator bool() const {
-      if (simple_vector_ ) {
-      return true;
-      }
-        return false;
-    }
+    // // Возвращает true, если указатель ненулевой, и false в противном случае
+    // explicit operator bool() const {
+    //   if (simple_vector_ ) {
+    //   return true;
+    //   }
+    //     return false;
+    // }
    
     // Возвращает значение сырого указателя, хранящего адрес начала массива
     Type* Get() const noexcept
